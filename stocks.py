@@ -6,10 +6,10 @@ stocks = DEFAULT_TICKERS
 for stock in stocks:
     try:
         data = requests.get("http://chart.finance.yahoo.com/table.csv?s="+stock+"&a=2&b=15&c=2015&d=4&e=15&f=2017&g=d&ignore=.csv")
-        f = open("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\Daily\\table_"+stock+".csv", 'w' )
+        f = open("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\table_"+stock+".csv", 'w' )
         f.write(data.text)
         f.close()
-        df = pd.read_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\Daily\\table_"+stock+".csv")
+        df = pd.read_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\table_"+stock+".csv")
         del df['Open']
         def CleanData(a):
             a = str(a)
@@ -27,10 +27,11 @@ for stock in stocks:
         df['Adj Close'], df['Volume'] = df['Volume'],df['Adj Close']
         df['Date'] = df['Date'].map(lambda x:CleanData(x))
         df.sort_values(by='Date',ascending=True, inplace=True)
-        df.to_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\Daily\\table_"+stock+".csv", index=False)
-        df = pd.read_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\Daily\\table_"+stock+".csv",skiprows=1)
-        df.to_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\Daily\\table_"+stock+".csv", index=False)
-        df = pd.read_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\Daily\\table_"+stock+".csv", skiprows=1)
+        df.to_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\table_"+stock+".csv", index=False)
+        df.to_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\Daily\\Columnstable_"+stock+".csv", index=False)
+        df = pd.read_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\table_"+stock+".csv",skiprows=1)
+        df.to_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\table_"+stock+".csv", index=False)
+        df = pd.read_csv("C:\\Users\\ricci\\Desktop\\Projects\\Machine Learning\\table_"+stock+".csv", skiprows=1)
         print(df.head())
     except Exception as e:
         print("FAILED %s",stock)
