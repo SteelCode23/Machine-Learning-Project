@@ -1,0 +1,15 @@
+import random
+import pandas as pd
+col1=[]
+for y in range(1,200000):
+    col = []
+    for i in range(1,100):
+        col.append(random.randrange(1, 1000))
+    col1.append(col)
+
+# print(col1[2])    
+df = pd.DataFrame([col1[y] for y in range(1,199999)])
+series1=df.iloc[0,:]
+s1 = pd.Series(series1.values, index=df.columns)
+df = (df.corrwith(s1, axis=1))
+df.head
