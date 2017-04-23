@@ -1,27 +1,49 @@
+import os
+from os import listdir
+import psutil
 import pandas as pd
-#data = pd.read_csv("C:\\Users\\ricci\\BIGDATACOMPLETE.csv")
-import dask.dataframe as dd
-from dask.distributed import progress
-from distributed import Client
-client = Client()
-
-%%time
-
-df = dd.read_csv("C:\\Users\\ricci\\smalldata.csv")
-
-import pandas as pd
-df = pd.read_csv("C:\\Users\\ricci\\BIGDATACOMPLETE10.csv")
-df.fillna(value=1)
-# print(df)
-# data = df
-# print(data.columns)
-#data.columns[1]
 import numpy as np
 
-#print(len(data.columns[3]))
-#pd.to_numeric(data)
-df = df.corr()
-df['AAPL'].sort_values(ascending=False)
-df['AAPL'].sort_values(ascending=False).head(n=5)
-df.fillna(value=0)
-dd.df(['8/1/2013','6/1/2015'], axis=1).corr().compute()
+path = "C:/Users/ricci/Desktop/Projects/Machine Learning/daily/"
+%time
+data = pd.read_csv("C:/Users/ricci/Desktop/Projects/Machine Learning/daily/Columnstable_ABBV.csv")
+data.set_index('Date', inplace=True)
+del data['High']
+del data['Low']
+del data['Close']
+del data['Volume']
+columnnames = []
+for i in os.listdir(path):
+    stock = str(i).split("_")[1].split(".")[0]
+    try:
+        df = pd.read_csv("C:/Users/ricci/Desktop/Projects/Machine Learning/daily/" + i)
+        
+        del df['High']
+        del df['Low']
+        del df['Close']
+        del df['Volume']
+        df= df.rename(columns={'Date':'Date','Adj Close':str(stock)})
+        df.set_index('Date', inplace=True)
+        
+        data = pd.concat([data, df], axis = 1)
+    except Exception as e:
+        continue
+# data.columns=[i for i in os.listdir(path)]
+# print(data.head())
+# series1=data.iloc[2,:]
+# s1 = pd.Series(series1.values, index=data.columns)
+# df = (data.corrwith(s1, axis=1))
+# df.head
+
+data.to_csv("C:/Users/ricci/Desktop/Projects/Machine Learning/dailydaily/output.csv")
+data.reindex()
+data.fillna(value=.1, inplace = True)
+series1=data['Adj Close']
+
+data = data.T
+data.columns
+s1 = pd.Series(series1.values, index=data.columns)
+data.fillna(value=0,inplace=True)
+df = (data.corrwith(s1, axis=1))
+print(df.nlargest(n=5))
+%time
