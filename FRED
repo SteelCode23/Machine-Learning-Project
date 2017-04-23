@@ -77,11 +77,12 @@ def Indicator(dataframe, series):
             outputa = pd.DataFrame.from_dict(output1['observations'])
             del outputa["realtime_start"]
             del outputa["realtime_end"]
-            outputa.rename(columns={'Date':'date','value':series}, inplace = 'True')
+            outputa.rename(columns={'Date':'Date','value':series}, inplace = 'True')
             #print(outputa)
             #outputa = dd.from_pandas(outputa, npartitions=10)
             #Had some trouble joing the data sets, ultimately, I had to make the datetime English India using Excel
-            outputc = pandas.concat([dataframe, outputa], axis=1)
+            outputa.set_index('Date', inplace=True)
+            outputc = pandas.concat([outputc, outputa], axis=1)
             #outputc = pd.merge(dataframe, outputa, left_index=True, on = 'date') 
             #dataframe = dataframe.join(outputa)
             return outputc
@@ -106,79 +107,76 @@ for value in series_id["File"]:
 # @asyncio.coroutine
 def run(start, end):
     outputc = InitialObject()
+    outputc = outputc.set_index('date', inplace=True)  
     for i in range(start,end):
         print(i)
         try:
-            a = requests.get("https://api.stlouisfed.org/fred/series/observations?series_id="+str(series[i])+"&api_key=17188a6953269ab608ba14c3e3d8fb02&realtime_start=2013-08-14&observation_start=2013-08-14&frequency=m&file_type=json")
+            a = requests.get("https://api.stlouisfed.org/fred/series/observations?series_id="+str(series[i])+"&api_key=17188a6953269ab608ba14c3e3d8fb02&realtime_start=2015-04-15&observation_start=2015-04-15&frequency=m&file_type=json")
             output1 = json.loads(a.text)
             #print(output1)
             try:
                 outputa = pd.DataFrame.from_dict(output1['observations'])
                 del outputa["realtime_start"]
                 del outputa["realtime_end"]
-                outputa.rename(columns={'Date':'date','value':str(series[i])}, inplace = 'True')
-                #print(outputa)
-                #outputa = dd.from_pandas(outputa, npartitions=10)
-                #Had some trouble joing the data sets, ultimately, I had to make the datetime English India using Excel
-                outputc = pandas.concat([outputc, outputa], axis=1)
-                #outputc = pd.merge(dataframe, outputa, left_index=True, on = 'date') 
-                #dataframe = dataframe.join(outputa)
+                outputa = outputa.rename(columns={'date':'date','value':str(series[i])})
+                outputa = outputa.set_index('date', inplace=True)
+                outputc = pd.concat([outputc, outputa], axis=1, join='outer')
 
             except Exception as e:
                 print(e)
         except Exception as e:
             print(e)
-    outputc.to_csv("C:/Projects/finallysomebigdata" + start + ".csv")
+    outputc.to_csv("C:/Projects/finallysomebigdata" + str(start) + ".csv")
     
 dask = 0
 
-a = threading.Thread(target=run, args=(dask,dask + 1000,))
+a = threading.Thread(target=run, args=(dask,dask + 50,))
 a.start()
-dask = dask + 1001
+# dask = dask + 1001
 
-a = threading.Thread(target=run, args=(dask,dask + 1000,))
-a.start()
-dask = dask + 1001
-
-
-a = threading.Thread(target=run, args=(dask,dask + 1000,))
-a.start()
-dask = dask + 1001
+# a = threading.Thread(target=run, args=(dask,dask + 1000,))
+# a.start()
+# dask = dask + 1001
 
 
-a = threading.Thread(target=run, args=(dask,dask + 1000,))
-a.start()
-dask = dask + 1001
+# a = threading.Thread(target=run, args=(dask,dask + 1000,))
+# a.start()
+# dask = dask + 1001
 
 
-a = threading.Thread(target=run, args=(dask,dask + 1000,))
-a.start()
-dask = dask + 1001
+# a = threading.Thread(target=run, args=(dask,dask + 1000,))
+# a.start()
+# dask = dask + 1001
 
 
-a = threading.Thread(target=run, args=(dask,dask + 1000,))
-a.start()
-dask = dask + 1001
+# a = threading.Thread(target=run, args=(dask,dask + 1000,))
+# a.start()
+# dask = dask + 1001
 
 
-a = threading.Thread(target=run, args=(dask,dask + 1000,))
-a.start()
-dask = dask + 1001
+# a = threading.Thread(target=run, args=(dask,dask + 1000,))
+# a.start()
+# dask = dask + 1001
 
 
-a = threading.Thread(target=run, args=(dask,dask + 1000,))
-a.start()
-dask = dask + 1001
+# a = threading.Thread(target=run, args=(dask,dask + 1000,))
+# a.start()
+# dask = dask + 1001
 
 
-a = threading.Thread(target=run, args=(dask,dask + 1000,))
-a.start()
-dask = dask + 1001
+# a = threading.Thread(target=run, args=(dask,dask + 1000,))
+# a.start()
+# dask = dask + 1001
 
 
-a = threading.Thread(target=run, args=(dask,dask + 1000,))
-a.start()
-dask = dask + 1001
+# a = threading.Thread(target=run, args=(dask,dask + 1000,))
+# a.start()
+# dask = dask + 1001
+
+
+# a = threading.Thread(target=run, args=(dask,dask + 1000,))
+# a.start()
+# dask = dask + 1001
 
 
 # loop = asyncio.get_event_loop()
