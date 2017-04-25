@@ -52,50 +52,7 @@ def InitialObject():
         print(e)
 
 
-def runa(series):
-    data = InitialObject()
-    for i in range(0,100):
-        data = Indicator(data, series[i])
-    data.to_csv("C:/FREDDATA/runa.csv")
-    return data
-    
-
-def runb(series):
-    data = InitialObject()
-    for i in range(101,200):
-        data = Indicator(data, series[i])
-    data.to_csv("C:/FREDDATA/runb.csv")
-    return data
-
-#@asyncio.coroutine
-def Indicator(dataframe, series):
-    try:
-        a = requests.get("https://api.stlouisfed.org/fred/series/observations?series_id="+series+"&api_key=17188a6953269ab608ba14c3e3d8fb02&realtime_start=2013-08-14&observation_start=2013-08-14&frequency=m&file_type=json")
-        output1 = json.loads(a.text)
-        #print(output1)
-        try:
-            outputa = pd.DataFrame.from_dict(output1['observations'])
-            del outputa["realtime_start"]
-            del outputa["realtime_end"]
-            outputa.rename(columns={'Date':'Date','value':series}, inplace = 'True')
-            #print(outputa)
-            #outputa = dd.from_pandas(outputa, npartitions=10)
-            #Had some trouble joing the data sets, ultimately, I had to make the datetime English India using Excel
-            outputa.set_index('Date', inplace=True)
-            outputc = pandas.concat([outputc, outputa], axis=1)
-            #outputc = pd.merge(dataframe, outputa, left_index=True, on = 'date') 
-            #dataframe = dataframe.join(outputa)
-            return outputc
-
-
-        except Exception as e:
-            print(e)
-            return dataframe
-    except Exception as e:
-        print(e)
-        return dataframe
-    
-        
+       
 series_id = pd.read_csv("C:\\Users\\ricci\Desktop\\Projects\\FRED\\Months.csv",encoding = "ISO-8859-1")
 series= []
 for value in series_id["File"]:
@@ -104,10 +61,17 @@ for value in series_id["File"]:
     series.append(value)
 
 
-# @asyncio.coroutine
+@asyncio.coroutine
 def run(start, end):
+    series_id = pd.read_csv("C:\\Users\\ricci\Desktop\\Projects\\FRED\\Months.csv",encoding = "ISO-8859-1")
+    series= []
+    for value in series_id["File"]:
+        value = value.split(".csv")[0]
+        value = value.rpartition("\\")[-1]
+        series.append(value)
+
     outputc = InitialObject()
-    outputc = outputc.set_index('date', inplace=True)  
+    #outputc = outputc.set_index('date', inplace=True)  
     for i in range(start,end):
         print(i)
         try:
@@ -118,20 +82,21 @@ def run(start, end):
                 outputa = pd.DataFrame.from_dict(output1['observations'])
                 del outputa["realtime_start"]
                 del outputa["realtime_end"]
-                outputa = outputa.rename(columns={'date':'date','value':str(series[i])})
-                outputa = outputa.set_index('date', inplace=True)
-                outputc = pd.concat([outputc, outputa], axis=1, join='outer')
-
+                outputa = outputa.rename(columns={'date':'date1','value':str(series[i])})
+                #outputa = outputa.set_index('date', inplace=True)
+                outputc = pd.concat([outputc, outputa], axis=1)
+                del outputc['date1']
+                print(outputc.head())
             except Exception as e:
                 print(e)
         except Exception as e:
             print(e)
     outputc.to_csv("C:/Projects/finallysomebigdata" + str(start) + ".csv")
-    
-dask = 0
+#Uncomment if below code is not working
 
-a = threading.Thread(target=run, args=(dask,dask + 50,))
-a.start()
+
+# a = threading.Thread(target=run, args=(dask,dask + 50,))
+# a.start()
 # dask = dask + 1001
 
 # a = threading.Thread(target=run, args=(dask,dask + 1000,))
@@ -179,13 +144,33 @@ a.start()
 # dask = dask + 1001
 
 
-# loop = asyncio.get_event_loop()
-
+loop = asyncio.get_event_loop()
+loop = asyncio.get_event_loop()
+loop.run_until_complete(asyncio.gather(*[run(i, i+1) for i in range(1,100)]))
+loop.close()
 # loop.run_until_complete(asyncio.gather(
 #     run(0, 1000),
-#     run(1001, 2000),
-#     run(2001, 3000),
-#     run(3001, 4000),
-#     run(4001, 5000),
+#     #run(10, 20)
+#     # run(20, 30),
+#     # run(30, 40),
+#     # run(40, 50),
 #     ))
 # loop.close()
+
+
+data = pd.read_csv("C:\\Projects\\finallysomebigdata10.csv", skiprows=0)
+data.reindex()
+del data['Unnamed: 0']
+data.head()
+data
+data.fillna(value=.1, inplace = True)
+series1 = data['00XALCGBM086NEST']
+data
+data.reindex()
+del data['date']
+data = data.T
+data.columns
+s1 = pd.Series(series1.values, index=data.columns)
+data.fillna(value=0,inplace=True)
+df = (data.corrwith(s1, axis=1))
+print(df.nlargest(n=5))
