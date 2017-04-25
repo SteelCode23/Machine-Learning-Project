@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 path = "C:/Users/ricci/Desktop/Projects/Machine Learning/daily/"
-%time
+
 data = pd.read_csv("C:/Users/ricci/Desktop/Projects/Machine Learning/daily/Columnstable_ABBV.csv")
 data.set_index('Date', inplace=True)
 del data['High']
@@ -28,13 +28,6 @@ for i in os.listdir(path):
         data = pd.concat([data, df], axis = 1)
     except Exception as e:
         continue
-# data.columns=[i for i in os.listdir(path)]
-# print(data.head())
-# series1=data.iloc[2,:]
-# s1 = pd.Series(series1.values, index=data.columns)
-# df = (data.corrwith(s1, axis=1))
-# df.head
-
 data.to_csv("C:/Users/ricci/Desktop/Projects/Machine Learning/dailydaily/output.csv")
 data.reindex()
 data.fillna(value=.1, inplace = True)
@@ -46,4 +39,4 @@ s1 = pd.Series(series1.values, index=data.columns)
 data.fillna(value=0,inplace=True)
 df = (data.corrwith(s1, axis=1))
 print(df.nlargest(n=5))
-%time
+
